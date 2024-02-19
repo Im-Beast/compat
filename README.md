@@ -1,4 +1,4 @@
-= ⛰️ Compat
+# ⛰️ Compat
 
 Package that tries to make writing code compatible on different runtimes easier.
 
