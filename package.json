@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "type": "module",
+  "dependencies": { "tsx": "^4.7.1" }
+}

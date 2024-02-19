@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "lib": ["es2023", "dom"],
+    "moduleResolution": "NodeNext"
+  }
+}

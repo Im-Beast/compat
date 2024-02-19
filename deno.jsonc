@@ -1,0 +1,10 @@
+{
+  "name": "@beast/compat",
+  "version": "0.0.1-uhm",
+
+  "exclude": ["node_modules", ".vscode", "pnpm-lock.yaml"],
+
+  "compilerOptions": {
+    "lib": ["es2023", "dom"]
+  }
+}
