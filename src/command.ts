@@ -95,8 +95,8 @@ export async function command(
 
       const code = await new Promise<number>((resolve) => {
         instance.on("close", (code) => {
-          stdout = new Uint8Array(mergeUint8Arrays(stdoutChunks));
-          stderr = new Uint8Array(mergeUint8Arrays(stderrChunks));
+          stdout = mergeUint8Arrays(stdoutChunks);
+          stderr = mergeUint8Arrays(stderrChunks);
           resolve(code);
         });
       });
