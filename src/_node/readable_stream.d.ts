@@ -1,4 +1,4 @@
-import type { NodeBuffer } from "./buffer.d.ts";
+import type { Buffer } from "./buffer.d.ts";
 
 export interface StreamModule {
   Readable: NodeReadableStream;
@@ -6,7 +6,7 @@ export interface StreamModule {
 }
 
 export declare interface NodeReadableStream {
-  on(event: "data", listener: (chunk: NodeBuffer) => void): this;
+  on(event: "data", listener: (chunk: Buffer) => void): this;
   toWeb<T>(readable: NodeReadableStream): ReadableStream<T>;
 }
 

@@ -1,4 +1,4 @@
-export interface NodeBuffer {
-  concat(chunks: NodeBuffer[]): NodeBuffer;
+export interface Buffer {
+  concat(chunks: Buffer[]): Buffer;
   buffer: ArrayBuffer;
 }
