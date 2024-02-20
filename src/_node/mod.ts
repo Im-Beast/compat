@@ -8,7 +8,16 @@ export * from "./buffer.d.ts";
 
 export interface Process {
   env: { [key: string]: string };
-  platform: string;
+  platform:
+    | "aix"
+    | "darwin"
+    | "freebsd"
+    | "linux"
+    | "openbsd"
+    | "sunos"
+    | "win32"
+    // ! android support is experimental on node
+    | "android";
   permission: {
     has(permission: NodePermission, specific?: string): boolean;
   };

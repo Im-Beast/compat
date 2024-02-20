@@ -8,6 +8,7 @@ export type OS =
   | "linux"
   | "android"
   | "windows"
+  | "openbsd"
   | "freebsd"
   | "netbsd"
   | "aix"
@@ -18,9 +19,18 @@ export type OS =
 export function os(): OS {
   switch (whichRuntime()) {
     case Runtime.Deno:
-      return Deno.build.os as OS;
-    case Runtime.Node:
-      return process.platform as OS;
+      return Deno.build.os;
+    case Runtime.Node: {
+      const { platform } = process;
+      switch (platform) {
+        case "win32":
+          return "windows";
+        case "sunos":
+          return "solaris";
+        default:
+          return platform;
+      }
+    }
     case Runtime.Browser: {
       // deno-lint-ignore no-explicit-any
       const userAgentData = (navigator as any)?.userAgentData as {

@@ -13,7 +13,16 @@ interface Deno {
     new (command: string | URL, options?: CommandOptions): Command;
   };
   build: {
-    os: string;
+    os:
+      | "darwin"
+      | "linux"
+      | "android"
+      | "windows"
+      | "freebsd"
+      | "netbsd"
+      | "aix"
+      | "solaris"
+      | "illumos";
   };
 }
 
