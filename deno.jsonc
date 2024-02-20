@@ -2,6 +2,14 @@
   "name": "@beast/compat",
   "version": "0.0.1-uhm",
 
+  "exports": {
+    "./command": "./src/command.ts",
+    "./env": "./src/env.ts",
+    "./os": "./src/os.ts",
+    "./permissions": "./src/permissions.ts",
+    "./which": "./src/which.ts"
+  },
+
   "exclude": ["node_modules", ".vscode", "pnpm-lock.yaml"],
 
   "compilerOptions": {
