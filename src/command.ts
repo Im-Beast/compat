@@ -19,12 +19,14 @@ export interface CommandOutput {
   readonly stderr: Uint8Array;
 }
 
+export type StdioMode = "piped" | "inherit" | "null";
+
 export interface CommandOptions {
   cwd?: string | URL;
 
-  stdin?: "piped" | "inherit" | "null";
-  stdout?: "piped" | "inherit" | "null";
-  stderr?: "piped" | "inherit" | "null";
+  stdin?: StdioMode;
+  stdout?: StdioMode;
+  stderr?: StdioMode;
 
   env?: Record<string, string>;
   clearEnv?: boolean;
@@ -38,6 +40,10 @@ export async function command(
   if (!(await hasPermission(Permission.Run, command))) {
     throw new PermissionError(Permission.Run);
   }
+
+  options.stdin ??= "piped";
+  options.stdout ??= "piped";
+  options.stderr ??= "piped";
 
   switch (whichRuntime()) {
     case Runtime.Deno: {
@@ -58,9 +64,9 @@ export async function command(
           ...options.env,
         },
         stdio: [
-          (options.stdin?.replace("piped", "pipe") ?? "pipe") as NodeStdioMode,
-          (options.stdout?.replace("piped", "pipe") ?? "pipe") as NodeStdioMode,
-          (options.stderr?.replace("piped", "pipe") ?? "pipe") as NodeStdioMode,
+          convertToNodeStdioMode(options.stdin),
+          convertToNodeStdioMode(options.stdout),
+          convertToNodeStdioMode(options.stderr),
         ],
       };
 
@@ -86,6 +92,7 @@ export async function command(
 
       let stdout = new Uint8Array();
       let stderr = new Uint8Array();
+
       const code = await new Promise<number>((resolve) => {
         instance.on("close", (code) => {
           stdout = new Uint8Array(mergeUint8Arrays(stdoutChunks));
@@ -103,5 +110,16 @@ export async function command(
     }
     default:
       return undefined;
+  }
+}
+
+function convertToNodeStdioMode(mode: StdioMode): NodeStdioMode {
+  switch (mode) {
+    case "null":
+      return "ignore";
+    case "piped":
+      return "pipe";
+    default:
+      return mode;
   }
 }
