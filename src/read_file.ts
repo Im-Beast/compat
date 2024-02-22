@@ -27,8 +27,11 @@ export async function readFile(
       const root = await navigator.storage.getDirectory();
       if (path instanceof URL) {
         path = posixUrlToPath(path);
+      } else if (path.startsWith(".")) {
+        path = path.slice(1);
       }
-      const hierarchicalPath = posixPathToHierarchicalPath(path);
+
+      const hierarchicalPath = path.split("/");
 
       let dir = root;
       for (const segment of hierarchicalPath.slice(0, -1)) {
