@@ -7,6 +7,15 @@ import { posixPathToHierarchicalPath } from "./_shared/path.ts";
 
 // TODO: normalize errors thrown
 
+/**
+ Reads the file at given `path` and returns an array of bytes.
+
+ In browsers File System API is used and files are written to OPFS.
+ Keep in mind that OPFS is only available in secure contexts (HTTPS/localhost).
+ Path given to the browser must be POSIX-alike.
+
+ @throws
+*/
 export async function readFile(
   path: string | URL,
   signal?: AbortSignal,
