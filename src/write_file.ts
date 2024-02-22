@@ -13,16 +13,16 @@ interface WriteFileOptions {
 }
 
 /**
- Write `data` to given `path`.
- The file gets created if it doesn't exist.
- If a file exists, it gets overwritten.
-
- In browsers File System API is used and files are written to OPFS.
- Keep in mind that OPFS is only available in secure contexts (HTTPS/localhost).
- Path given to the browser must be POSIX-alike.
-
- @throws
-*/
+ * Write `data` to given `path`.
+ * The file gets created if it doesn't exist.
+ * If a file exists, it gets overwritten.
+ *
+ * In browsers File System API is used and files are written to OPFS.
+ * Keep in mind that OPFS is only available in secure contexts (HTTPS/localhost).
+ * Path given to the browser must be POSIX-alike.
+ *
+ * @throws
+ */
 export async function writeFile(
   path: string | URL,
   data: Uint8Array,
