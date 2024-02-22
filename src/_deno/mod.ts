@@ -1,7 +1,7 @@
-import type { Command, CommandOptions } from "./command.d.ts";
+import type { Command, CommandOptions } from "./command.ts";
 import type { PermissionDescriptor, PermissionStatus } from "./permissions.ts";
 
-export * from "./command.d.ts";
+export * from "./command.ts";
 export * from "./permissions.ts";
 
 interface Deno {
@@ -12,6 +12,10 @@ interface Deno {
   Command: {
     new (command: string | URL, options?: CommandOptions): Command;
   };
+  readFile(
+    path: string | URL,
+    options?: { signal?: AbortSignal },
+  ): Promise<Uint8Array>;
   build: {
     os:
       | "darwin"

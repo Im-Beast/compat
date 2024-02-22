@@ -1,12 +1,12 @@
 // Copyright 2018-2024 the Deno authors. All rights reserved. MIT license.
-export class Command {
+export declare class Command {
   constructor(command: string | URL, options?: CommandOptions);
   output(): Promise<CommandOutput>;
   outputSync(): CommandOutput;
   spawn(): ChildProcess;
 }
 
-export class ChildProcess {
+export declare class ChildProcess {
   get stdin(): WritableStream<Uint8Array>;
   get stdout(): ReadableStream<Uint8Array>;
   get stderr(): ReadableStream<Uint8Array>;

@@ -1,10 +1,8 @@
 import type { NodePermission } from "./permissions.ts";
 export * from "./permissions.ts";
-export * from "./child_process.d.ts";
 export * from "./child_process.ts";
-export * from "./readable_stream.d.ts";
-export * from "./readable_stream.ts";
-export * from "./buffer.d.ts";
+export * from "./streams.ts";
+export * from "./buffer.ts";
 
 export interface Process {
   env: { [key: string]: string };
