@@ -18,6 +18,9 @@ export class PermissionError extends Error {
   }
 }
 
+/**
+ * Return whether current runtime has permissions to do certain things.
+ */
 export async function hasPermission(
   permission: Permission,
   specific?: string | URL,
@@ -45,6 +48,7 @@ export async function hasPermission(
       return true;
     }
     case Runtime.Browser:
+      // TODO: Support browser permissions
       return false;
   }
 }

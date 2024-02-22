@@ -16,6 +16,9 @@ export type OS =
   | "illumos"
   | "unknown";
 
+/**
+ * Returns operating system on which the code is running.
+ */
 export function os(): OS {
   switch (whichRuntime()) {
     case Runtime.Deno:

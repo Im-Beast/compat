@@ -4,6 +4,9 @@ export enum Runtime {
   Browser = "Browser",
 }
 
+/**
+ * Reports the runtime in which code is running
+ */
 export function whichRuntime(): Runtime {
   const { userAgent } = navigator;
 
