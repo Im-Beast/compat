@@ -3,6 +3,7 @@ export * from "./permissions.ts";
 export * from "./child_process.ts";
 export * from "./streams.ts";
 export * from "./buffer.ts";
+export * from "./fs.ts";
 
 export interface Process {
   env: { [key: string]: string };

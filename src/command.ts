@@ -2,6 +2,7 @@ import { Runtime, whichRuntime } from "./which.ts";
 import { hasPermission, Permission, PermissionError } from "./permissions.ts";
 
 import { urlToPath } from "./_shared/path.ts";
+import { mergeUint8Arrays } from "./_shared/merge_uint8.ts";
 
 import { Deno } from "./_deno/mod.ts";
 import {
@@ -10,7 +11,6 @@ import {
   type SpawnOptions as NodeSpawnOptions,
   type StdioMode as NodeStdioMode,
 } from "./_node/mod.ts";
-import { mergeUint8Arrays } from "./_shared/merge_uint8.ts";
 
 export interface CommandOutput {
   code: number;

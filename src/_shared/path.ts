@@ -15,3 +15,7 @@ export function urlToPath(url: URL): string {
 
   return os() === "windows" ? windowsUrlToPath(url) : posixUrlToPath(url);
 }
+
+export function posixPathToHierarchicalPath(path: string): string[] {
+  return path.split("/");
+}
