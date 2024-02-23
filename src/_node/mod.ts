@@ -1,4 +1,5 @@
 import type { NodePermission } from "./permissions.ts";
+import type { NodeReadableStream } from "./streams.ts";
 
 export * from "./permissions.ts";
 export * from "./child_process.ts";
@@ -20,6 +21,9 @@ export interface Process {
     | "android";
   permission: {
     has(permission: NodePermission, specific?: string): boolean;
+  };
+  stdin: NodeReadableStream<Uint8Array> & {
+    setRawMode(mode: boolean): void;
   };
 }
 

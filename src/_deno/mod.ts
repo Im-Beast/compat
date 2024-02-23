@@ -16,8 +16,19 @@ interface WriteFileOptions {
   signal?: AbortSignal;
 }
 
+interface SetRawOptions {
+  cbreak?: boolean;
+}
+
 interface Deno {
   env: Map<string, string>;
+
+  stdin: {
+    setRaw(mode: boolean, options?: SetRawOptions): void;
+    readable: ReadableStream<Uint8Array> & {
+      [Symbol.asyncIterator](): AsyncIterableIterator<Uint8Array>;
+    };
+  };
 
   permissions: {
     query(desc: PermissionDescriptor): Promise<PermissionStatus>;
