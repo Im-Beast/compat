@@ -1,4 +1,5 @@
 import type { NodeReadableStream, NodeWritableStream } from "./streams.ts";
+import type { Buffer } from "./buffer.ts";
 
 export type StdioMode = "pipe" | "overlapped" | "ignore" | "inherit";
 
@@ -13,9 +14,9 @@ export interface SpawnOptions {
 }
 
 export interface ChildProcess {
-  get stderr(): NodeReadableStream | null | undefined;
-  get stdin(): NodeWritableStream | null | undefined;
-  get stdout(): NodeReadableStream | null | undefined;
+  get stderr(): NodeReadableStream<Buffer> | null | undefined;
+  get stdin(): NodeWritableStream<Buffer> | null | undefined;
+  get stdout(): NodeReadableStream<Buffer> | null | undefined;
 
   readonly pid: number;
   get killed(): boolean;
