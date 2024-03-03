@@ -1,37 +1,35 @@
 import { Runtime, whichRuntime } from "./which.ts";
+import { MissingByoWebImplementation } from "./errors.ts";
 
 import { Deno } from "./_deno/mod.ts";
-import { process } from "./_node/mod.ts";
+import { nodeReadableStreamToWeb, process } from "./_node/mod.ts";
 
 interface StdinOptions {
   raw?: boolean;
   signal?: AbortSignal;
+  byoWebImplementation?: () =>
+    | ReadableStream<Uint8Array>
+    | Promise<ReadableStream<Uint8Array>>;
 }
 
-export async function* stdin(
-  { raw = false, signal }: StdinOptions,
-): AsyncGenerator<Uint8Array> {
+export async function stdin(
+  options?: StdinOptions,
+): Promise<ReadableStream<Uint8Array>> {
   switch (whichRuntime()) {
-    case Runtime.Deno: {
-      Deno.stdin.setRaw(raw);
-      for await (const chunk of Deno.stdin.readable) {
-        if (signal?.aborted) break;
-        yield chunk;
+    case Runtime.Deno:
+      if (typeof options?.raw === "boolean") {
+        Deno.stdin.setRaw(options?.raw);
       }
-      break;
-    }
-    case Runtime.Node: {
-      process.stdin.setRawMode(true);
-      for await (const chunk of process.stdin) {
-        if (signal?.aborted) break;
-        yield new Uint8Array(chunk.buffer);
+      return Deno.stdin.readable;
+    case Runtime.Node:
+      if (typeof options?.raw === "boolean") {
+        process.stdin.setRawMode(options.raw);
       }
-      break;
-    }
-    case Runtime.Browser: {
-      /// TODO: What should be the desired behavior?
-      break;
-    }
+      return nodeReadableStreamToWeb(process.stdin);
+    case Runtime.Browser:
+      if (options?.byoWebImplementation) {
+        return await options.byoWebImplementation();
+      }
+      throw new MissingByoWebImplementation("stdin");
   }
 }
-
