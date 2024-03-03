@@ -29,6 +29,8 @@ interface Deno {
       [Symbol.asyncIterator](): AsyncIterableIterator<Uint8Array>;
     };
   };
+  stdout: { writable: WritableStream<Uint8Array> };
+  stderr: { writable: WritableStream<Uint8Array> };
 
   permissions: {
     query(desc: PermissionDescriptor): Promise<PermissionStatus>;

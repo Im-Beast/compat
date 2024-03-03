@@ -1,5 +1,5 @@
 import type { NodePermission } from "./permissions.ts";
-import type { NodeReadableStream } from "./streams.ts";
+import type { NodeReadableStream, NodeWritableStream } from "./streams.ts";
 
 export * from "./permissions.ts";
 export * from "./child_process.ts";
@@ -22,9 +22,9 @@ export interface Process {
   permission: {
     has(permission: NodePermission, specific?: string): boolean;
   };
-  stdin: NodeReadableStream<Uint8Array> & {
-    setRawMode(mode: boolean): void;
-  };
+  stdin: NodeReadableStream<Uint8Array> & { setRawMode(mode: boolean): void };
+  stdout: NodeWritableStream<Uint8Array>;
+  stderr: NodeWritableStream<Uint8Array>;
 }
 
 // deno-lint-ignore no-explicit-any
