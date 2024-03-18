@@ -1,3 +1,9 @@
+/**
+ * Returns operating system on which the code is running.\
+ * This module is compatible with Deno, Node and Web.
+ * @module
+ */
+
 import { Runtime, whichRuntime } from "./which.ts";
 
 import { Deno } from "./_deno/mod.ts";

@@ -1,3 +1,8 @@
+/**
+ * Errors that can be thrown by compat modules.
+ * @module
+ */
+
 import { Permission } from "./_shared/permissions.ts";
 
 export class MissingTargetImplementation extends Error {

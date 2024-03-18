@@ -1,3 +1,9 @@
+/**
+ * Write data to a file.\
+ * This module is compatible with Deno, Node and Web.
+ * @module
+ */
+
 import { Runtime, whichRuntime } from "./which.ts";
 import {
   IsDirectory,
@@ -11,14 +17,6 @@ import { posixUrlToPath } from "./_shared/path.ts";
 
 import { Deno } from "./_deno/mod.ts";
 import { fs, isNodeError } from "./_node/mod.ts";
-
-/**
- * This module is compatible with Deno, Node and Web
- *
- * Write file
- *
- * @module
- */
 
 interface WriteFileOptions {
   signal?: AbortSignal;

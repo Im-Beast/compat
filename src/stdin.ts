@@ -1,3 +1,10 @@
+/**
+ * Returns a readable stream of standard input.\
+ * This module is compatible with Deno and Node OOTB.\
+ * To support web, a custom implementation is required.
+ * @module
+ */
+
 import { Runtime, whichRuntime } from "./which.ts";
 import { MissingByoWebImplementation } from "./errors.ts";
 

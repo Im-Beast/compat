@@ -1,3 +1,10 @@
+/**
+ * Run a command with the given arguments and options.\
+ * This module is compatible with Deno and Node OOTB.\
+ * To support web, a custom implementation is required.
+ * @module
+ */
+
 import { Runtime, whichRuntime } from "./which.ts";
 import { hasPermission, Permission } from "./permissions.ts";
 import { MissingByoWebImplementation, PermissionDenied } from "./errors.ts";

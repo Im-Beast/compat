@@ -1,3 +1,9 @@
+/**
+ * Reports the runtime in which code is running.\
+ * This module is compatible with Deno, Node and Web.
+ * @module
+ */
+
 export enum Runtime {
   Deno = "Deno",
   Node = "Node",

@@ -1,3 +1,9 @@
+/**
+ * Reads the contents of a file.\
+ * This module is compatible with Deno, Node and Web.
+ * @module
+ */
+
 import { Runtime, whichRuntime } from "./which.ts";
 import { Permission } from "./permissions.ts";
 import {

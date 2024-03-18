@@ -1,3 +1,10 @@
+/**
+ * Returns a writable stream to standard output.\
+ * This module is compatible with Deno and Node OOTB.\
+ * To support web, a custom implementation is required.
+ * @module
+ */
+
 import { Runtime, whichRuntime } from "./which.ts";
 import { MissingByoWebImplementation } from "./errors.ts";
 

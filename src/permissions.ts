@@ -1,3 +1,9 @@
+/**
+ * Check if the current runtime has permissions to do certain things.\
+ * This module is compatible with Deno, Node and Web.
+ * @module
+ */
+
 import { Runtime, whichRuntime } from "./which.ts";
 
 import { urlToPath } from "./_shared/path.ts";
