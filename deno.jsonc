@@ -1,13 +1,20 @@
 {
   "name": "@beast/compat",
-  "version": "0.0.1",
+  "version": "0.0.2",
 
   "exports": {
+    ".": "./main.ts",
     "./command": "./src/command.ts",
     "./env": "./src/env.ts",
+    "./errors": "./src/errors.ts",
     "./os": "./src/os.ts",
     "./permissions": "./src/permissions.ts",
-    "./which": "./src/which.ts"
+    "./read_file": "./src/read_file.ts",
+    "./stderr": "./src/stderr.ts",
+    "./stdin": "./src/stdin.ts",
+    "./stdout": "./src/stdout.ts",
+    "./which": "./src/which.ts",
+    "./write_file": "./src/write_file.ts"
   },
 
   "compilerOptions": {
