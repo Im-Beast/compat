@@ -57,7 +57,7 @@ export async function command(
   command: string | URL,
   args: string[],
   options: CommandOptions,
-): Promise<CommandOutput | undefined> {
+): Promise<CommandOutput> {
   if (!(await hasPermission(Permission.Run, command))) {
     throw new PermissionDenied(Permission.Run);
   }
