@@ -1,11 +1,15 @@
 import { Runtime, whichRuntime } from "./which.ts";
+import { Permission } from "./permissions.ts";
+import {
+  IsDirectory,
+  MissingTargetImplementation,
+  NotFound,
+  PermissionDenied,
+} from "./errors.ts";
 
 import { Deno } from "./_deno/mod.ts";
-import { fs } from "./_node/mod.ts";
+import { fs, isNodeError } from "./_node/mod.ts";
 import { posixUrlToPath } from "./_shared/path.ts";
-import { posixPathToHierarchicalPath } from "./_shared/path.ts";
-
-// TODO: normalize errors thrown
 
 /**
  * Reads the file at given `path` and returns an array of bytes.
@@ -14,7 +18,10 @@ import { posixPathToHierarchicalPath } from "./_shared/path.ts";
  * Keep in mind that OPFS is only available in secure contexts (HTTPS/localhost).
  * Path given to the browser must be POSIX-alike.
  *
- * @throws
+ * @throws {PermissionDenied} when permission to read the file got denied
+ * @throws {IsDirectory} when the path points to a directory
+ * @throws {NotFound} when the file at given path does not exist
+ * @throws {MissingTargetImplementation} when the runtime does not support reading files
  */
 export async function readFile(
   path: string | URL,
@@ -22,15 +29,43 @@ export async function readFile(
 ): Promise<Uint8Array> {
   switch (whichRuntime()) {
     case Runtime.Deno:
-      return await Deno.readFile(path, { signal });
+      try {
+        return await Deno.readFile(path, { signal });
+      } catch (error) {
+        if (error instanceof Deno.errors.PermissionDenied) {
+          throw new PermissionDenied(Permission.Write, path);
+        } else if (error instanceof Deno.errors.IsADirectory) {
+          throw new IsDirectory(path);
+        } else if (error instanceof Deno.errors.NotFound) {
+          throw new NotFound(path);
+        }
+        throw error;
+      }
     case Runtime.Node: {
-      const fsModule = await fs();
-      const buffer = await fsModule.readFile(path, { signal });
-      return new Uint8Array(buffer.buffer);
+      try {
+        const fsModule = await fs();
+        const buffer = await fsModule.readFile(path, { signal });
+        return new Uint8Array(buffer.buffer);
+      } catch (error) {
+        if (isNodeError(error)) {
+          if ((error.code === "EACCES" || error.code === "ERR_ACCESS_DENIED")) {
+            throw new PermissionDenied(Permission.Write, path);
+          } else if (error.code === "EISDIR") {
+            throw new IsDirectory(path);
+          } else if (error.code === "ENOENT") {
+            throw new NotFound(path);
+          }
+        }
+        throw error;
+      }
     }
     case Runtime.Browser: {
       if (navigator.storage === undefined) {
-        throw new Error("FileSystem API is not supported in this environment.");
+        throw new MissingTargetImplementation(
+          "readFile",
+          navigator.userAgent,
+          "\nwriteFile is only supported wherever FileSystem API is.\nIf your browser does support it, please make sure you are in a secure context (https/localhost).",
+        );
       }
 
       const root = await navigator.storage.getDirectory();
@@ -43,14 +78,32 @@ export async function readFile(
       const hierarchicalPath = path.split("/");
 
       let dir = root;
-      for (const segment of hierarchicalPath.slice(0, -1)) {
-        dir = await dir.getDirectoryHandle(segment);
+      try {
+        for (const segment of hierarchicalPath.slice(0, -1)) {
+          dir = await dir.getDirectoryHandle(segment);
+        }
+      } catch (error) {
+        if (error.name === "NotAllowedError") {
+          throw new PermissionDenied(Permission.Write, path);
+        } else if (error.name === "NotFoundError") {
+          throw new NotFound(path);
+        }
+        throw error;
       }
 
-      const fileHandle = await dir.getFileHandle(path);
-      const file = await fileHandle.getFile();
+      try {
+        const fileHandle = await dir.getFileHandle(path);
+        const file = await fileHandle.getFile();
 
-      return new Uint8Array(await file.arrayBuffer());
+        return new Uint8Array(await file.arrayBuffer());
+      } catch (error) {
+        if (error.name === "NotAllowedError") {
+          throw new PermissionDenied(Permission.Write, path);
+        } else if (error.name === "NotFoundError") {
+          throw new NotFound(path);
+        }
+        throw error;
+      }
     }
   }
 }

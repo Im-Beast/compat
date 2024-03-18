@@ -1,11 +1,24 @@
 import { Runtime, whichRuntime } from "./which.ts";
+import {
+  IsDirectory,
+  MissingTargetImplementation,
+  NotFound,
+  PermissionDenied,
+} from "./errors.ts";
+
+import { Permission } from "./_shared/permissions.ts";
+import { posixUrlToPath } from "./_shared/path.ts";
 
 import { Deno } from "./_deno/mod.ts";
-import { fs } from "./_node/mod.ts";
-import { posixUrlToPath } from "./_shared/path.ts";
-import { posixPathToHierarchicalPath } from "./_shared/path.ts";
+import { fs, isNodeError } from "./_node/mod.ts";
 
-// TODO: normalize errors thrown
+/**
+ * This module is compatible with Deno, Node and Web
+ *
+ * Write file
+ *
+ * @module
+ */
 
 interface WriteFileOptions {
   signal?: AbortSignal;
@@ -21,7 +34,10 @@ interface WriteFileOptions {
  * Keep in mind that OPFS is only available in secure contexts (HTTPS/localhost).
  * Path given to the browser must be POSIX-alike.
  *
- * @throws
+ * @throws {PermissionDenied} when permission to write the file got denied
+ * @throws {IsDirectory} when the path points to a directory
+ * @throws {NotFound} when the file at given path does not exist
+ * @throws {MissingTargetImplementation} when the runtime does not support writing files
  */
 export async function writeFile(
   path: string | URL,
@@ -32,16 +48,43 @@ export async function writeFile(
 
   switch (whichRuntime()) {
     case Runtime.Deno:
-      await Deno.writeFile(path, data, options);
-      break;
-    case Runtime.Node: {
-      const fsModule = await fs();
-      await fsModule.writeFile(path, data, options);
-      break;
-    }
+      try {
+        await Deno.writeFile(path, data, options);
+        break;
+      } catch (error) {
+        if (error instanceof Deno.errors.PermissionDenied) {
+          throw new PermissionDenied(Permission.Write, path);
+        } else if (error instanceof Deno.errors.IsADirectory) {
+          throw new IsDirectory(path);
+        } else if (error instanceof Deno.errors.NotFound) {
+          throw new NotFound(path);
+        }
+        throw error;
+      }
+    case Runtime.Node:
+      try {
+        const fsModule = await fs();
+        await fsModule.writeFile(path, data, options);
+        break;
+      } catch (error) {
+        if (isNodeError(error)) {
+          if ((error.code === "EACCES" || error.code === "ERR_ACCESS_DENIED")) {
+            throw new PermissionDenied(Permission.Write, path);
+          } else if (error.code === "EISDIR") {
+            throw new IsDirectory(path);
+          } else if (error.code === "ENOENT") {
+            throw new NotFound(path);
+          }
+        }
+        throw error;
+      }
     case Runtime.Browser: {
       if (navigator.storage === undefined) {
-        throw new Error("FileSystem API is not supported in this environment.");
+        throw new MissingTargetImplementation(
+          "writeFile",
+          navigator.userAgent,
+          "\nwriteFile is only supported wherever FileSystem API is.\nIf your browser does support it, please make sure you are in a secure context (https/localhost).",
+        );
       }
 
       const root = await navigator.storage.getDirectory();
@@ -54,21 +97,40 @@ export async function writeFile(
       const hierarchicalPath = path.split("/");
 
       let dir = root;
-      for (const segment of hierarchicalPath.slice(0, -1)) {
-        dir = await dir.getDirectoryHandle(segment);
+      try {
+        for (const segment of hierarchicalPath.slice(0, -1)) {
+          dir = await dir.getDirectoryHandle(segment);
+        }
+      } catch (error) {
+        if (error.name === "NotAllowedError") {
+          throw new PermissionDenied(Permission.Write, path);
+        } else if (error.name === "NotFoundError") {
+          throw new NotFound(path);
+        }
+        throw error;
       }
 
-      const fileHandle = await dir.getFileHandle(path, {
-        create: true,
-      });
+      try {
+        const fileHandle = await dir.getFileHandle(path, {
+          create: true,
+        });
 
-      const writable = await fileHandle.createWritable();
+        const writable = await fileHandle.createWritable();
 
-      // We need to truncate the bytes in the file first
-      // So that we don't write on top of existing bytes
-      await writable.truncate(0);
-      await writable.write(data);
-      await writable.close();
+        // We need to truncate the bytes in the file first
+        // So that we don't write on top of existing bytes
+        await writable.truncate(0);
+        await writable.write(data);
+        await writable.close();
+      } catch (error) {
+        if (error.name === "NotAllowedError") {
+          throw new PermissionDenied(Permission.Write, path);
+        } else if (error.name === "NotFoundError") {
+          throw new NotFound(path);
+        }
+        throw error;
+      }
+
       break;
     }
   }

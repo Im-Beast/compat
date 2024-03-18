@@ -40,6 +40,11 @@ interface Deno {
     new (command: string | URL, options?: CommandOptions): Command;
   };
 
+  errors: Record<
+    "AlreadyExists" | "IsADirectory" | "PermissionDenied" | "NotFound",
+    new (...args: unknown[]) => Error
+  >;
+
   build: {
     os:
       | "darwin"

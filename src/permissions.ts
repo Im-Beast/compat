@@ -12,14 +12,8 @@ import {
 
 export { Permission };
 
-export class PermissionError extends Error {
-  constructor(permission: Permission) {
-    super(`Permission denied: ${Permission[permission]}`);
-  }
-}
-
 /**
- * Return whether current runtime has permissions to do certain things.
+ * Returns whether current runtime has permissions to do certain things.
  */
 export async function hasPermission(
   permission: Permission,
@@ -48,7 +42,14 @@ export async function hasPermission(
       return true;
     }
     case Runtime.Browser:
-      // TODO: Support browser permissions
-      return false;
+      switch (permission) {
+        case Permission.Read:
+        case Permission.Write:
+          return "storage" in navigator;
+        case Permission.Net:
+          return true;
+        default:
+          return false;
+      }
   }
 }

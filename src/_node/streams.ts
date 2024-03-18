@@ -27,8 +27,7 @@ export declare abstract class NodeWritableStream<T> {
 }
 
 export async function stream(): Promise<StreamModule> {
-  // deno-lint-ignore no-explicit-any
-  return await import("node:stream") as any;
+  return await import("node:stream") as StreamModule;
 }
 
 export async function nodeReadableStreamToWeb<T>(

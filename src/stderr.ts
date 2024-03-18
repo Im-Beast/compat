@@ -5,11 +5,17 @@ import { Deno } from "./_deno/mod.ts";
 import { nodeWritableStreamToWeb, process } from "./_node/mod.ts";
 
 interface StderrOptions {
-  byoWebImplementation?: () =>
+  /** Provide a custom implementation for the web environment. */
+  byoWebImplementation?: (options?: StderrOptions) =>
     | WritableStream<Uint8Array>
     | Promise<WritableStream<Uint8Array>>;
 }
 
+/**
+ * Returns a writable stream to standard error.
+ *
+ * @throws {MissingByoWebImplementation} when running in a browser and no `options.byoWebImplementation` is provided.
+ */
 export async function stderr(
   options?: StderrOptions,
 ): Promise<WritableStream<Uint8Array>> {
@@ -20,7 +26,7 @@ export async function stderr(
       return await nodeWritableStreamToWeb(process.stderr);
     case Runtime.Browser:
       if (options?.byoWebImplementation) {
-        return await options.byoWebImplementation();
+        return await options.byoWebImplementation(options);
       }
       throw new MissingByoWebImplementation("stderr");
   }

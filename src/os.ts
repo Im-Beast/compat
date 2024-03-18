@@ -35,10 +35,9 @@ export function os(): OS {
       }
     }
     case Runtime.Browser: {
-      // deno-lint-ignore no-explicit-any
-      const userAgentData = (navigator as any)?.userAgentData as {
-        platform?: string;
-      };
+      const userAgentData = "userAgentData" in navigator
+        ? navigator.userAgentData as { platform?: string }
+        : undefined;
 
       if (userAgentData) {
         switch (userAgentData.platform) {

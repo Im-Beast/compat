@@ -6,12 +6,17 @@ import { nodeReadableStreamToWeb, process } from "./_node/mod.ts";
 
 interface StdinOptions {
   raw?: boolean;
-  signal?: AbortSignal;
-  byoWebImplementation?: () =>
+  /** Provide a custom implementation the web environment. */
+  byoWebImplementation?: (options?: StdinOptions) =>
     | ReadableStream<Uint8Array>
     | Promise<ReadableStream<Uint8Array>>;
 }
 
+/**
+ * Returns a readable stream of standard input.
+ *
+ * @throws {MissingByoWebImplementation} when running in a browser and no `options.byoWebImplementation` is provided.
+ */
 export async function stdin(
   options?: StdinOptions,
 ): Promise<ReadableStream<Uint8Array>> {
@@ -28,7 +33,7 @@ export async function stdin(
       return nodeReadableStreamToWeb(process.stdin);
     case Runtime.Browser:
       if (options?.byoWebImplementation) {
-        return await options.byoWebImplementation();
+        return await options.byoWebImplementation(options);
       }
       throw new MissingByoWebImplementation("stdin");
   }

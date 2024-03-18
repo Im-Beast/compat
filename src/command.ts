@@ -1,5 +1,6 @@
 import { Runtime, whichRuntime } from "./which.ts";
-import { hasPermission, Permission, PermissionError } from "./permissions.ts";
+import { hasPermission, Permission } from "./permissions.ts";
+import { MissingByoWebImplementation, PermissionDenied } from "./errors.ts";
 
 import { urlToPath } from "./_shared/path.ts";
 import { mergeUint8Arrays } from "./_shared/merge_uint8.ts";
@@ -30,15 +31,28 @@ export interface CommandOptions {
 
   env?: Record<string, string>;
   clearEnv?: boolean;
+
+  /** Provide a custom implementation for the web environment */
+  byoWebImplementation?: (
+    options?: CommandOptions,
+  ) => CommandOutput | Promise<CommandOutput>;
 }
 
+// TODO(Im-Beast): Verify that errors thrown are the same between runtimes.
+
+/**
+ * Run a command with the given arguments and options.
+ *
+ * @throws {PermissionDenied} when the command does not have the `run` permission.
+ * @throws {MissingByoWebImplementation} when the runtime does not have an implementation for this function (e.g. Web).
+ */
 export async function command(
   command: string | URL,
   args: string[],
   options: CommandOptions,
 ): Promise<CommandOutput | undefined> {
   if (!(await hasPermission(Permission.Run, command))) {
-    throw new PermissionError(Permission.Run);
+    throw new PermissionDenied(Permission.Run);
   }
 
   options.stdin ??= "piped";
@@ -109,7 +123,10 @@ export async function command(
       };
     }
     default:
-      return undefined;
+      if (options.byoWebImplementation) {
+        return await options.byoWebImplementation(options);
+      }
+      throw new MissingByoWebImplementation("command");
   }
 }
 
