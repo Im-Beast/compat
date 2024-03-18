@@ -5,6 +5,7 @@
 
 import { Permission } from "./_shared/permissions.ts";
 
+/** Thrown whenever a feature isn't supported on given target */
 export class MissingTargetImplementation extends Error {
   identifier: string;
   target: string;
@@ -17,6 +18,7 @@ export class MissingTargetImplementation extends Error {
   }
 }
 
+/** Thrown whenever a feature isn't supported on Web and `options.byoWebImplementation` is not set */
 export class MissingByoWebImplementation extends MissingTargetImplementation {
   constructor(identifier: string) {
     super(
@@ -27,6 +29,10 @@ export class MissingByoWebImplementation extends MissingTargetImplementation {
   }
 }
 
+/**
+ * Thrown whenever Deno or Node process don't have appropriate permissions set
+ * or user does not have access to a given resource.
+ */
 export class PermissionDenied extends Error {
   permission: Permission;
   specific?: string | URL;
@@ -44,6 +50,7 @@ export class PermissionDenied extends Error {
   }
 }
 
+/** Thrown whenever tried to use path as a file, but it is a directory */
 export class IsDirectory extends Error {
   path: string | URL;
 
@@ -53,6 +60,7 @@ export class IsDirectory extends Error {
   }
 }
 
+/** Thrown whenever given path does not exist */
 export class NotFound extends Error {
   path: string | URL;
 
