@@ -11,6 +11,7 @@ import { MissingByoWebImplementation } from "./errors.ts";
 import { Deno } from "./_deno/mod.ts";
 import { nodeWritableStreamToWeb, process } from "./_node/mod.ts";
 
+/** Options for {@linkcode stdout} */
 interface StdoutOptions {
   /** Provide a custom implementation for the web environment. */
   byoWebImplementation?: (options?: StdoutOptions) =>
@@ -22,6 +23,14 @@ interface StdoutOptions {
  * Returns a writable stream to standard output.
  *
  * @throws {MissingByoWebImplementation} when running in a browser and no `options.byoWebImplementation` is provided.
+ *
+ * @example
+ * ```ts
+ * const stdoutStream = await stdout();
+ * const writer = stdoutStream.getWriter();
+ * writer.write(new TextEncoder().encode("Hello, stdout!\n"));
+ * writer.close();
+ * ```
  */
 export async function stdout(
   options?: StdoutOptions,

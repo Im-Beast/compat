@@ -4,6 +4,7 @@
  * @module
  */
 
+/** Runtime, returned by {@linkcode whichRuntime} */
 export enum Runtime {
   Deno = "Deno",
   Node = "Node",
@@ -12,6 +13,11 @@ export enum Runtime {
 
 /**
  * Reports the runtime in which code is running
+ *
+ * @example
+ * ```ts
+ * console.log(whichRuntime()); // "Deno" | "Node" | "Browser"
+ * ```
  */
 export function whichRuntime(): Runtime {
   const { userAgent } = navigator;

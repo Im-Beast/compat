@@ -29,14 +29,18 @@ export interface CommandOutput {
 
 export type StdioMode = "piped" | "inherit" | "null";
 
+/** Options for {@linkcode command} */
 export interface CommandOptions {
+  /** The current working directory for the command */
   cwd?: string | URL;
 
   stdin?: StdioMode;
   stdout?: StdioMode;
   stderr?: StdioMode;
 
+  /** Environment variables to be set in the command environment */
   env?: Record<string, string>;
+  /** Whether environment variables of currrent environment should be removed from the command */
   clearEnv?: boolean;
 
   /** Provide a custom implementation for the web environment */
@@ -52,6 +56,21 @@ export interface CommandOptions {
  *
  * @throws {PermissionDenied} when the command does not have the `run` permission.
  * @throws {MissingByoWebImplementation} when the runtime does not have an implementation for this function (e.g. Web).
+ *
+ * @example
+ * ```ts
+ * try {
+ *   await command("echo", ["-e", "\\e[31mHello!\\e[0m"], {
+ *     stdout: "inherit",
+ *   });
+ * } catch (error) {
+ *   if (error instanceof PermissionDenied) {
+ *     console.error("You do not have permission to run this command.");
+ *   } else {
+ *     console.error(error);
+ *   }
+ * }
+ * ```
  */
 export async function command(
   command: string | URL,

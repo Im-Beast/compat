@@ -9,6 +9,7 @@ import { Runtime, whichRuntime } from "./which.ts";
 import { Deno } from "./_deno/mod.ts";
 import { process } from "./_node/mod.ts";
 
+/** Operating system, returned by {@linkcode os} */
 export type OS =
   | "darwin"
   | "linux"
@@ -24,6 +25,11 @@ export type OS =
 
 /**
  * Returns operating system on which the code is running.
+ *
+ * @example
+ * ```ts
+ * console.log(os()); // "darwin" | "linux" | "android" | "windows" | "openbsd" | "freebsd" | "netbsd" | "aix" | "solaris" | "illumos" | "unknown"
+ * ```
  */
 export function os(): OS {
   switch (whichRuntime()) {

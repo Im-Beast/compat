@@ -28,6 +28,26 @@ import { posixUrlToPath } from "./_shared/path.ts";
  * @throws {IsDirectory} when the path points to a directory
  * @throws {NotFound} when the file at given path does not exist
  * @throws {MissingTargetImplementation} when the runtime does not support reading files
+ *
+ * @example
+ * ```ts
+ * try {
+ *   const data = await readFile("example.txt");
+ *   console.log(new TextDecoder().decode(data));
+ * } catch (error) {
+ *   if (error instanceof PermissionDenied) {
+ *     console.error(
+ *       `Permission denied to read from ${error.specific ?? "the file"}`,
+ *     );
+ *   } else if (error instanceof IsDirectory) {
+ *     console.error(`${error.path} is a directory`);
+ *   } else if (error instanceof NotFound) {
+ *     console.error(`${error.path} does not exist`);
+ *   } else if (error instanceof MissingTargetImplementation) {
+ *     console.error(`Your runtime does not support reading files`);
+ *   }
+ * }
+ * ```
  */
 export async function readFile(
   path: string | URL,

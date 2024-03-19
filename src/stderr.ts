@@ -11,6 +11,7 @@ import { MissingByoWebImplementation } from "./errors.ts";
 import { Deno } from "./_deno/mod.ts";
 import { nodeWritableStreamToWeb, process } from "./_node/mod.ts";
 
+/** Options for {@linkcode stderr} */
 interface StderrOptions {
   /** Provide a custom implementation for the web environment. */
   byoWebImplementation?: (options?: StderrOptions) =>
@@ -22,6 +23,14 @@ interface StderrOptions {
  * Returns a writable stream to standard error.
  *
  * @throws {MissingByoWebImplementation} when running in a browser and no `options.byoWebImplementation` is provided.
+ *
+ * @example
+ * ```ts
+ * const stderrStream = await stderr();
+ * const writer = stderrStream.getWriter();
+ * writer.write(new TextEncoder().encode("Hello, stderr!\n"));
+ * writer.close();
+ * ```
  */
 export async function stderr(
   options?: StderrOptions,

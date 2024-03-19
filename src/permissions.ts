@@ -20,6 +20,16 @@ export { Permission };
 
 /**
  * Returns whether current runtime has permissions to do certain things.
+ *
+ * @example
+ * ```ts
+ * const canRead = await hasPermission(Permission.Read, "file.txt");
+ * if (canRead) {
+ *   console.log("I can read file.txt");
+ * } else {
+ *   console.log("I can't read file.txt");
+ * }
+ * ```
  */
 export async function hasPermission(
   permission: Permission,

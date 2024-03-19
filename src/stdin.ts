@@ -11,6 +11,7 @@ import { MissingByoWebImplementation } from "./errors.ts";
 import { Deno } from "./_deno/mod.ts";
 import { nodeReadableStreamToWeb, process } from "./_node/mod.ts";
 
+/** Options for {@linkcode stdin} */
 interface StdinOptions {
   raw?: boolean;
   /** Provide a custom implementation the web environment. */
@@ -23,6 +24,22 @@ interface StdinOptions {
  * Returns a readable stream of standard input.
  *
  * @throws {MissingByoWebImplementation} when running in a browser and no `options.byoWebImplementation` is provided.
+ *
+ * @example
+ * Read first chunk from stdin:
+ * ```ts
+ * const stdinStream = await stdin();
+ * const reader = stdinStream.getReader();
+ * const { value } = await reader.read();
+ * console.log(new TextDecoder().decode(value));
+ * ```
+ *
+ * @example
+ * Read all chunks from stdin:
+ * ```ts
+ * for await (const chunk of stdin()) {
+ *  console.log(new TextDecoder().decode(chunk));
+ * }
  */
 export async function stdin(
   options?: StdinOptions,

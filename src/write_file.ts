@@ -18,6 +18,7 @@ import { posixUrlToPath } from "./_shared/path.ts";
 import { Deno } from "./_deno/mod.ts";
 import { fs, isNodeError } from "./_node/mod.ts";
 
+/** Options for {@linkcode writeFile} */
 interface WriteFileOptions {
   signal?: AbortSignal;
   mode?: number;
@@ -36,6 +37,23 @@ interface WriteFileOptions {
  * @throws {IsDirectory} when the path points to a directory
  * @throws {NotFound} when the file at given path does not exist
  * @throws {MissingTargetImplementation} when the runtime does not support writing files
+ *
+ * @example
+ * ```ts
+ * try {
+ *   await writeFile("example.txt", new TextEncoder().encode("Hello, world!"));
+ * } catch (error) {
+ *   if (error instanceof PermissionDenied) {
+ *     console.error(`Permission denied to write to ${error.specific ?? "the file"}`);
+ *   } else if (error instanceof IsDirectory) {
+ *     console.error(`${error.path} is a directory`);
+ *   } else if (error instanceof NotFound) {
+ *     console.error(`${error.path} does not exist`);
+ *   } else if (error instanceof MissingTargetImplementation) {
+ *     console.error(`Your runtime does not support writing files`);
+ *   }
+ * }
+ * ```
  */
 export async function writeFile(
   path: string | URL,
