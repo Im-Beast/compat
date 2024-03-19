@@ -7,6 +7,7 @@ export enum DenoPermission {
   Run = "run",
   Env = "env",
   Sys = "sys",
+  Hrtime = "hrtime",
 }
 
 export interface PermissionDescriptor {
@@ -24,6 +25,7 @@ export const permissionSpecificKey = {
   [DenoPermission.Run]: "command",
   [DenoPermission.Env]: "variable",
   [DenoPermission.Sys]: "kind",
+  [Permission.Hrtime]: "",
 };
 
 export const denoPermissionsEquivalent = {
@@ -33,4 +35,5 @@ export const denoPermissionsEquivalent = {
   [Permission.Run]: DenoPermission.Run,
   [Permission.Env]: DenoPermission.Env,
   [Permission.Sys]: DenoPermission.Sys,
+  [Permission.Hrtime]: DenoPermission.Hrtime,
 };

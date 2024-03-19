@@ -5,4 +5,5 @@ export enum Permission {
   Run = "run",
   Env = "env",
   Sys = "sys",
+  Hrtime = "hrtime",
 }

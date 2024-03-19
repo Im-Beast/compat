@@ -14,4 +14,5 @@ export const nodePermissionsEquivalent = {
   [Permission.Net]: undefined,
   [Permission.Env]: undefined,
   [Permission.Sys]: undefined,
+  [Permission.Hrtime]: undefined,
 };
