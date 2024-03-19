@@ -4,4 +4,5 @@ export enum Permission {
   Net = "net",
   Run = "run",
   Env = "env",
+  Sys = "sys",
 }

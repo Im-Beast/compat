@@ -6,6 +6,7 @@ export enum DenoPermission {
   Net = "net",
   Run = "run",
   Env = "env",
+  Sys = "sys",
 }
 
 export interface PermissionDescriptor {
@@ -22,6 +23,7 @@ export const permissionSpecificKey = {
   [DenoPermission.Net]: "host",
   [DenoPermission.Run]: "command",
   [DenoPermission.Env]: "variable",
+  [DenoPermission.Sys]: "kind",
 };
 
 export const denoPermissionsEquivalent = {
@@ -30,4 +32,5 @@ export const denoPermissionsEquivalent = {
   [Permission.Net]: DenoPermission.Net,
   [Permission.Run]: DenoPermission.Run,
   [Permission.Env]: DenoPermission.Env,
+  [Permission.Sys]: DenoPermission.Sys,
 };

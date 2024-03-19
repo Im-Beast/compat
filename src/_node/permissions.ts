@@ -13,4 +13,5 @@ export const nodePermissionsEquivalent = {
   [Permission.Run]: NodePermission.Run,
   [Permission.Net]: undefined,
   [Permission.Env]: undefined,
+  [Permission.Sys]: undefined,
 };
