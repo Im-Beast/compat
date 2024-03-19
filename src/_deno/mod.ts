@@ -57,6 +57,7 @@ interface Deno {
       | "solaris"
       | "illumos";
   };
+  osRelease(): string;
 
   readFile(
     path: string | URL,
