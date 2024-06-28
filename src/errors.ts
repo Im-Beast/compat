@@ -3,7 +3,7 @@
  * @module
  */
 
-import { Permission } from "./_shared/permissions.ts";
+import type { Permission } from "./_shared/permissions.ts";
 
 /** Thrown whenever a feature isn't supported on given target */
 export class MissingTargetImplementation extends Error {

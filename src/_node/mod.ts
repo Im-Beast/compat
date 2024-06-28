@@ -8,6 +8,7 @@ export * from "./buffer.ts";
 export * from "./fs.ts";
 export * from "./error.ts";
 export * from "./os.ts";
+export * from "./test.ts";
 
 export interface Process {
   env: { [key: string]: string };

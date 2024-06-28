@@ -1,5 +1,6 @@
 import type { Command, CommandOptions } from "./command.ts";
 import type { PermissionDescriptor, PermissionStatus } from "./permissions.ts";
+import type { DenoTestDefinition } from "./test.ts";
 
 export * from "./command.ts";
 export * from "./permissions.ts";
@@ -68,6 +69,8 @@ interface Deno {
     data: Uint8Array,
     options?: WriteFileOptions,
   ): Promise<void>;
+
+  test: DenoTestDefinition;
 }
 
 // deno-lint-ignore no-explicit-any

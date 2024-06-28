@@ -1,6 +1,6 @@
 {
   "name": "@beast/compat",
-  "version": "0.1.2",
+  "version": "0.2.0",
 
   "exports": {
     ".": "./main.ts",
@@ -14,7 +14,8 @@
     "./stdin": "./src/stdin.ts",
     "./stdout": "./src/stdout.ts",
     "./which": "./src/which.ts",
-    "./write_file": "./src/write_file.ts"
+    "./write_file": "./src/write_file.ts",
+    "./test": "./src/test.ts"
   },
 
   "compilerOptions": {

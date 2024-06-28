@@ -40,6 +40,7 @@ interface StdinOptions {
  * for await (const chunk of stdin()) {
  *  console.log(new TextDecoder().decode(chunk));
  * }
+ * ```
  */
 export async function stdin(
   options?: StdinOptions,
