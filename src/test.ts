@@ -9,21 +9,26 @@ import { Runtime, whichRuntime } from "./which.ts";
 import { type NodeTestContext, test as nodeTest } from "./_node/test.ts";
 import { Deno } from "./_deno/mod.ts";
 import { MissingTargetImplementation } from "./errors.ts";
+import type { DenoTestContext } from "./_deno/test.ts";
 
 interface TestContextCallback {
   (ctx: TestContext): void | Promise<void>;
 }
 
-interface TestDefinition {
+interface TestMethodDefinition {
   (name: string, fn: TestContextCallback): void | Promise<void>;
-  ignore(name: string, fn: TestContextCallback): void;
-  ignoreIf(
-    condition: boolean,
-  ): (name: string, fn: TestContextCallback) => void | Promise<void>;
+}
+
+interface TestDefinition extends TestMethodDefinition {
+  ignore: TestMethodDefinition;
+  ignoreIf(condition: boolean): TestMethodDefinition;
 }
 
 interface TestContext {
-  step(name: string, ctx: TestContextCallback): void | Promise<void>;
+  step: TestMethodDefinition & {
+    ignore: TestMethodDefinition;
+    ignoreIf(condition: boolean): TestMethodDefinition;
+  };
 }
 
 /**
@@ -67,13 +72,29 @@ let test: TestDefinition;
 
 switch (whichRuntime()) {
   case Runtime.Deno: {
+    const buildCtx = (denoCtx: DenoTestContext): TestContext => {
+      const step = (name: string, cb: TestContextCallback) =>
+        denoCtx.step(name, (ctx) => cb(buildCtx(ctx)));
+
+      return {
+        step: Object.assign(step, {
+          ignore: (name: string) => {
+            console.info(`Ignored ${name}`); // Deno has no `ignore` method on TestContext for some reason?
+          },
+          ignoreIf(condition: boolean) {
+            return condition ? this.ignore : step;
+          },
+        }),
+      };
+    };
+
     const patchedTest = (name: string, cb: TestContextCallback) =>
-      Deno.test(name, cb);
+      Deno.test(name, (ctx) => cb(buildCtx(ctx)));
 
     test = Object.assign(patchedTest, {
       ignore: Deno.test.ignore,
       ignoreIf(condition: boolean) {
-        return condition ? Deno.test.ignore : Deno.test;
+        return condition ? Deno.test.ignore : patchedTest;
       },
     });
     break;
@@ -81,9 +102,20 @@ switch (whichRuntime()) {
   case Runtime.Node: {
     const testModule = await nodeTest();
 
-    const buildCtx = (nodeCtx: NodeTestContext): TestContext => ({
-      step: (name, cb) => nodeCtx.test(name, (ctx) => cb(buildCtx(ctx))),
-    });
+    const buildCtx = (nodeCtx: NodeTestContext): TestContext => {
+      const step = (name: string, cb: TestContextCallback) =>
+        nodeCtx.test(name, (ctx) => cb(buildCtx(ctx)));
+
+      return {
+        step: Object.assign(step, {
+          // Create a callback to preserve `this`
+          ignore: (name: string) => nodeCtx.skip(name),
+          ignoreIf(condition: boolean) {
+            return condition ? this.ignore : step;
+          },
+        }),
+      };
+    };
 
     const patchedTest = (name: string, cb: TestContextCallback) =>
       testModule.test(name, (nodeCtx) => cb(buildCtx(nodeCtx)));
