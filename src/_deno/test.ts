@@ -9,5 +9,8 @@ export interface DenoTestDefinition {
 }
 
 export interface DenoTestContext {
-  step(name: string, ctx: DenoTestContextCallback): void | Promise<void>;
+  step(name: string, cb: DenoTestContextCallback): void | Promise<void>;
+  step(
+    options: { name: string; fn: DenoTestContextCallback; ignore?: boolean },
+  ): void | Promise<void>;
 }

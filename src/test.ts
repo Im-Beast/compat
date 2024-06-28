@@ -78,8 +78,9 @@ switch (whichRuntime()) {
 
       return {
         step: Object.assign(step, {
-          ignore: (name: string) => {
-            console.info(`Ignored ${name}`); // Deno has no `ignore` method on TestContext for some reason?
+          ignore(name: string, cb: TestContextCallback) {
+            const fn = (ctx: DenoTestContext) => cb(buildCtx(ctx));
+            return denoCtx.step({ name, fn, ignore: true });
           },
           ignoreIf(condition: boolean) {
             return condition ? this.ignore : step;
