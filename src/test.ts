@@ -1,3 +1,9 @@
+/**
+ * Creates a test.\
+ * This module is currently only compatible with Deno and Node.\
+ * @module
+ */
+
 import { Runtime, whichRuntime } from "./which.ts";
 
 import { type NodeTestContext, test as nodeTest } from "./_node/test.ts";
