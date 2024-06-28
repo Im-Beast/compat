@@ -5,16 +5,16 @@ import { Deno } from "./_deno/mod.ts";
 import { MissingTargetImplementation } from "./errors.ts";
 
 interface TestContextCallback {
-	(ctx: TestContext): void | Promise<void>;
+  (ctx: TestContext): void | Promise<void>;
 }
 
 interface TestDefinition {
-	(name: string, fn: TestContextCallback): void | Promise<void>;
-	ignore(name: string, fn: TestContextCallback): void;
+  (name: string, fn: TestContextCallback): void | Promise<void>;
+  ignore(name: string, fn: TestContextCallback): void;
 }
 
 interface TestContext {
-	step(name: string, ctx: TestContextCallback): void | Promise<void>;
+  step(name: string, ctx: TestContextCallback): void | Promise<void>;
 }
 
 /**
@@ -58,31 +58,31 @@ interface TestContext {
 let test: TestDefinition;
 
 switch (whichRuntime()) {
-	case Runtime.Deno: {
-		test = Deno.test;
-		break;
-	}
-	case Runtime.Node: {
-		const testModule = await nodeTest();
+  case Runtime.Deno: {
+    test = Deno.test;
+    break;
+  }
+  case Runtime.Node: {
+    const testModule = await nodeTest();
 
-		const buildCtx = (nodeCtx: NodeTestContext): TestContext => ({
-			step: (name, cb) => nodeCtx.test(name, (ctx) => cb(buildCtx(ctx))),
-		});
+    const buildCtx = (nodeCtx: NodeTestContext): TestContext => ({
+      step: (name, cb) => nodeCtx.test(name, (ctx) => cb(buildCtx(ctx))),
+    });
 
-		test = Object.assign(
-			(name: string, cb: TestContextCallback) =>
-				testModule.test(name, (nodeCtx) => cb(buildCtx(nodeCtx))),
-			{ ignore: testModule.skip },
-		);
-		break;
-	}
-	case Runtime.Browser: {
-		throw new MissingTargetImplementation(
-			"test",
-			"browsers",
-			"\ntest isn't implemented for browsers yet.",
-		);
-	}
+    test = Object.assign(
+      (name: string, cb: TestContextCallback) =>
+        testModule.test(name, (nodeCtx) => cb(buildCtx(nodeCtx))),
+      { ignore: testModule.skip },
+    );
+    break;
+  }
+  case Runtime.Browser: {
+    throw new MissingTargetImplementation(
+      "test",
+      "browsers",
+      "\ntest isn't implemented for browsers yet.",
+    );
+  }
 }
 
 export { test };
