@@ -9,3 +9,4 @@ export * from "./src/stdin.ts";
 export * from "./src/stdout.ts";
 export * from "./src/which.ts";
 export * from "./src/write_file.ts";
+export * from "./src/test.ts";
