@@ -17,6 +17,9 @@ interface TestContextCallback {
 interface TestDefinition {
   (name: string, fn: TestContextCallback): void | Promise<void>;
   ignore(name: string, fn: TestContextCallback): void;
+  ignoreIf(
+    condition: boolean,
+  ): (name: string, fn: TestContextCallback) => void | Promise<void>;
 }
 
 interface TestContext {
@@ -25,7 +28,6 @@ interface TestContext {
 
 /**
  * Creates a test using `node:test` on Node and `Deno.test` on Deno.
- * It mimics a subset of `Deno.test`'s API's
  *
  * @throws {MissingTargetImplementation} when running in a browser
  *
@@ -65,7 +67,15 @@ let test: TestDefinition;
 
 switch (whichRuntime()) {
   case Runtime.Deno: {
-    test = Deno.test;
+    const patchedTest = (name: string, cb: TestContextCallback) =>
+      Deno.test(name, cb);
+
+    test = Object.assign(patchedTest, {
+      ignore: Deno.test.ignore,
+      ignoreIf(condition: boolean) {
+        return condition ? Deno.test.ignore : Deno.test;
+      },
+    });
     break;
   }
   case Runtime.Node: {
@@ -75,11 +85,15 @@ switch (whichRuntime()) {
       step: (name, cb) => nodeCtx.test(name, (ctx) => cb(buildCtx(ctx))),
     });
 
-    test = Object.assign(
-      (name: string, cb: TestContextCallback) =>
-        testModule.test(name, (nodeCtx) => cb(buildCtx(nodeCtx))),
-      { ignore: testModule.skip },
-    );
+    const patchedTest = (name: string, cb: TestContextCallback) =>
+      testModule.test(name, (nodeCtx) => cb(buildCtx(nodeCtx)));
+
+    test = Object.assign(patchedTest, {
+      ignore: testModule.skip,
+      ignoreIf(condition: boolean) {
+        return condition ? testModule.skip : patchedTest;
+      },
+    });
     break;
   }
   case Runtime.Browser: {
